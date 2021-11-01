@@ -11,11 +11,12 @@ namespace WindowsFormsApp1
     {
         public static Board chessBoard = new Board(8);
         public Moves move = new Moves();
+        public Player p = new Player();
         public Button[,] tileBtn = new Button[chessBoard.Size, chessBoard.Size];
         public Button[,] tileBox = new Button[chessBoard.Size, chessBoard.Size];
-        Button newSender, currentClickedButton;
+        Button newSender, currentClickedButton, newButton ;
         public Tile currentTile;
-        public String piece;
+        public String piece, temp;
         Point newLocation;
         public int x, y, row, column, player = 1;
         char[,] allPieces = new char[8, 8] {
@@ -111,34 +112,15 @@ public Form1()
             }
             else
             {
-                Button newButton = (Button)sender;
-                String temp = currentClickedButton.Text;
+                newButton = (Button)sender;
+                temp = currentClickedButton.Text;
                 Point newTileLocation = (Point)newButton.Tag;
 
                 if ((currentClickedButton.Text.Any(char.IsUpper) && player != 2 && !newButton.Text.Equals("e")))
                 {
-                    if (SamePlayer())
+                    if (!p.SamePlayer(currentClickedButton, chessBoard, tileBtn))
                     {
-                        if (move.IsPathClear(newTileLocation.X, newTileLocation.Y, x, y, piece, player, tileBtn, currentClickedButton, currentTile,chessBoard))
-                        {
-                            currentClickedButton.Text = "e";
-                            currentTile = null;
-                            currentClickedButton = null;
-                            move.RemoveHighlights(chessBoard, tileBtn);
-                            move.ActivateButtons(chessBoard, tileBtn);
-                            SwitchPlayers();
-                        }
-
-                    }
-
-                    return;
-                }
-                else if (currentClickedButton.Text.Any(char.IsLower) && player != 1 && !newButton.Text.Equals("e"))
-                {
-                    if (SamePlayer())
-                    {
-
-                        if (move.IsPathClear(newTileLocation.X, newTileLocation.Y, x, y, piece, player, tileBtn, currentClickedButton, currentTile, chessBoard))
+                        if (piece.Equals("P"))
                         {
                             currentClickedButton.Text = "e";
                             newButton.Text = temp;
@@ -148,7 +130,52 @@ public Form1()
 
                             move.RemoveHighlights(chessBoard, tileBtn);
                             move.ActivateButtons(chessBoard, tileBtn);
-                            SwitchPlayers();
+                            p.SwitchPlayers(ref player);
+                        }
+                        else if (move.IsPathClear(newTileLocation.X, newTileLocation.Y, x, y, piece, player, tileBtn, currentClickedButton, currentTile, chessBoard))
+                        {
+                            currentClickedButton.Text = "e";
+                            newButton.Text = temp;
+                            currentClickedButton = null;
+                            currentTile = null;
+
+
+                            move.RemoveHighlights(chessBoard, tileBtn);
+                            move.ActivateButtons(chessBoard, tileBtn);
+                            p.SwitchPlayers(ref player);
+                        }
+
+                    }
+
+                    return;
+                }
+                else if (currentClickedButton.Text.Any(char.IsLower) && player != 1 && !newButton.Text.Equals("e"))
+                {
+                    if (!p.SamePlayer(currentClickedButton, chessBoard, tileBtn))
+                    {
+                        if (piece.Equals("p"))
+                        {
+                            if(!tileBtn[newTileLocation.X, newTileLocation.Y].Text.Equals("e"))
+                            {
+                                if (tileBtn[newTileLocation.X, newTileLocation.Y].Text.Equals("k"))
+                                    move.DeActivateOtherButtons(chessBoard, tileBtn);
+                                else 
+                                    CapturePiece();
+                            }
+                           else
+                                CapturePiece();
+                        }
+                        else if (move.IsPathClear(newTileLocation.X, newTileLocation.Y, x, y, piece, player, tileBtn, currentClickedButton, currentTile, chessBoard))
+                        {
+                            if (!tileBtn[newTileLocation.X, newTileLocation.Y].Text.Equals("e"))
+                            {
+                                if (tileBtn[newTileLocation.X, newTileLocation.Y].Text.Equals("K"))
+                                    move.DeActivateOtherButtons(chessBoard, tileBtn);
+                                else
+                                    CapturePiece();
+                            }
+                            else
+                                CapturePiece();
                         }
 
                     }
@@ -168,572 +195,23 @@ public Form1()
                         move.RemoveHighlights(chessBoard, tileBtn);
                         move.ActivateButtons(chessBoard, tileBtn);
 
-                        SwitchPlayers();
+                        p.SwitchPlayers(ref player);
                     }
                 }
             }
          
           }
-
-        /*   void ShowPaths(String piece, int player)
-           {
-               switch (piece)
-               {
-                   case "p":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "Pawn", player);
-                           DeActivateOtherButtons();
-                           HighlightLegalMoves("Pawn");
-                           break;
-                       }
-                   case "P":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "Pawn", player);
-                           DeActivateOtherButtons();
-                           HighlightLegalMoves("Pawn");
-
-                           break;
-                       }
-                   case "r":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "Rook", player);
-                           HighlightLegalMoves("Rook");
-                           break;
-                       }
-                   case "R":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "Rook", player);
-                           HighlightLegalMoves("Rook");
-                           break;
-                       }
-                   case "n":
-                       { 
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "Knight", player);
-                           DeActivateOtherButtons();
-                           HighlightLegalMoves("Knight");
-                           break;
-                       }
-                   case "N":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "Knight", player);
-                           DeActivateOtherButtons();
-                           HighlightLegalMoves("Knight");
-                           break;
-                       }
-                   case "b":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "Bishop", player);
-                           DeActivateOtherButtons();
-                           HighlightLegalMoves("Bishop");
-                           break;
-                       }
-                   case "B":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "Bishop", player);
-                           DeActivateOtherButtons();
-                           HighlightLegalMoves("Bishop");
-                           break;
-                       }
-                   case "q":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "Queen", player);
-                           DeActivateOtherButtons();
-                           HighlightLegalMoves("Queen");
-                           break;
-                       }
-                   case "Q":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "Queen", player);
-                           DeActivateOtherButtons();
-                           HighlightLegalMoves("Queen");
-                           break;
-                       }
-                   case "k":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "King", player);
-                           DeActivateOtherButtons();
-                           HighlightLegalMoves("King");
-                           break;
-                       }
-
-                   case "K":
-                       {
-                           tileBtn[x, y].BackColor = Color.GreenYellow;
-                           chessBoard.NextLegalMoves(currentTile, "King", player);
-                           DeActivateOtherButtons();
-                           HighlightLegalMoves("King");
-                           break;
-                       }
-
-               }
-
-           }
-           void HighlightLegalMoves(String text)
-           {
-               for (int i = 0; i < chessBoard.Size; i++)
-               {
-                   for (int j = 0; j < chessBoard.Size; j++)
-                   {
-                       if (chessBoard.tileGrid[i, j].LegalNextMoves == true)
-                       {
-                           tileBtn[i, j].BackColor = Color.GreenYellow;
-                           tileBtn[i, j].Enabled = true;
-                       }
-                   }
-               }
-           }
-
-           void RemoveHighlights()
-           {
-               for (int i = 0; i < chessBoard.Size; i++)
-               {
-                   for (int j = 0; j < chessBoard.Size; j++)
-                   {
-                           tileBtn[i, j].BackColor = default(Color);
-                           chessBoard.tileGrid[i,j].LegalNextMoves = false;
-                   }
-               }
-           }*/
-
-
-
-        /*  void ActivateButtons()
-          {
-              for (int i = 0; i < chessBoard.Size; i++)
-              {
-                  for (int j = 0; j < chessBoard.Size; j++)
-                  {
-                      tileBtn[i, j].Enabled = true;
-                  }
-              }
-          }*/
-        /* void SwitchPlayers()
-         {
-             if (player == 1)
-                 player = 2;
-             else
-                 player = 1;
-         }
-       */
-        /*  bool IsPathClear(int destRow, int destColumn, int srcX, int srcY, String piece, int player)
-         {
-             switch (piece)
-             {
-                 case "p":
-                     {
-                         if (!tileBtn[srcX, srcY + 1].Text.Equals("e"))
-                         {
-                             currentClickedButton = null;
-                             move.RemoveHighlights(chessBoard, tileBtn);
-                             ActivateButtons();
-                             return false;
-                         }
-
-
-
-                         break;
-                     }
-                 case "P":
-                     {
-                         if (!tileBtn[srcX, srcY - 1].Text.Equals("e"))
-                         {
-                             currentClickedButton = null;
-                             move.RemoveHighlights(chessBoard, tileBtn);
-                             ActivateButtons();
-                             return false; 
-                         }
-
-
-                         break;
-                     }
-                 case "q":
-                     {
-                         //bottom right diagonal
-                         if(destRow > srcX )
-                         {
-                             for (int x = srcX; x < destRow; x++ )
-                             {
-                                 if(destColumn > srcY)
-                                 {
-                                     for (int y = srcY; y< destColumn; y++)
-                                     {
-                                         if (!tileBtn[x, y].Text.Equals("e"))
-                                         {
-                                             currentClickedButton = null;
-                                             currentTile = null;
-                                             move.RemoveHighlights(chessBoard, tileBtn);
-                                             ActivateButtons();
-                                             return false;
-                                         }
-                                         else
-                                             return true;
-                                     }
-                                 }
-
-                             }
-                         }
-
-                         //bottom left diagonal
-                         if (destRow < srcX)
-                         {
-                             for (int x = srcX; x < destRow; x--)
-                             {
-                                 if (destColumn > srcY)
-                                 {
-                                     for (int y = srcY; y > destColumn; y++)
-                                     {
-                                         if (!tileBtn[x, y].Text.Equals("e"))
-                                         {
-                                             currentClickedButton = null;
-                                             currentTile = null;
-                                             move.RemoveHighlights(chessBoard, tileBtn);
-                                             ActivateButtons();
-                                             return false;
-                                         }
-
-                                     }
-                                 }
-
-                             }
-                         }
-
-                         break;
-                     }
-                 case "Q":
-                     {
-                         //top right diagonal
-                         if (destRow > srcX)
-                         {
-                             for (int x = srcX - 1; x < destRow; x++)
-                             {
-                                 if (destColumn < srcY)
-                                 {
-                                     for (int y = srcY - 1; y > destColumn; y--)
-                                     {
-                                         if (!tileBtn[x, y].Text.Equals("e"))
-                                         {
-                                             currentClickedButton = null;
-                                             currentTile = null;
-                                             move.RemoveHighlights(chessBoard, tileBtn);
-                                             ActivateButtons();
-                                             return false;
-                                         }
-                                         else
-                                             return true;
-                                     }
-                                 }
-
-                             }
-                         }
-
-                         //top left diagonal
-                         if (destRow < srcX)
-                         {
-                             for (int x = srcX -1 ; x > destRow; x--)
-                             {
-                                 if (destColumn < srcY)
-                                 {
-                                     for (int y = srcY - 1; y >= destColumn; y--)
-                                     {
-                                         if (!tileBtn[x, y].Text.Equals("e"))
-                                         {
-                                             currentClickedButton = null;
-                                             currentTile = null;
-                                             move.RemoveHighlights(chessBoard, tileBtn);
-                                             ActivateButtons();
-                                             return false;
-                                         }
-                                         else
-                                             return true;
-                                     }
-                                 }
-
-                             }
-                         }
-
-                         //same column diff row
-                         if (destRow == srcX)
-                         {
-                             if (destColumn < srcY)
-                             {
-                                 for (int y = srcY - 1; y >= destColumn; y--)
-                                 {
-                                     if (!tileBtn[srcX, y].Text.Equals("e"))
-                                     {
-                                         currentClickedButton = null;
-                                         currentTile = null;
-                                         move.RemoveHighlights(chessBoard, tileBtn);
-                                         ActivateButtons();
-                                         return false;
-                                     }
-
-                                 }
-                             }
-                             else if (destColumn > srcY)
-                             {
-                                 for (int y = srcY + 1; y <= destColumn; y++)
-                                 {
-                                     if (!tileBtn[srcX, y].Text.Equals("e"))
-                                     {
-                                         currentClickedButton = null;
-                                         currentTile = null;
-                                         move.RemoveHighlights(chessBoard, tileBtn);
-                                         ActivateButtons();
-                                         return false;
-                                     }
-
-                                 }
-                             }
-                         }
-                         //same row diff column
-                         if (destColumn == srcY)
-                         {
-                             if (destRow< srcX)
-                             {
-                                 for (int x = srcX - 1; x >= destRow; x--)
-                                 {
-                                     if (!tileBtn[x, srcY].Text.Equals("e"))
-                                     {
-                                         currentClickedButton = null;
-                                         currentTile = null;
-                                         move.RemoveHighlights(chessBoard, tileBtn);
-                                         ActivateButtons();
-                                         return false;
-                                     }
-
-                                 }
-                             }
-                             else if (destRow > srcX)
-                             {
-                                 for (int x = srcX + 1; x <= destRow; x++)
-                                 {
-                                     if (!tileBtn[x, srcY].Text.Equals("e"))
-                                     {
-                                         currentClickedButton = null;
-                                         currentTile = null;
-                                         move.RemoveHighlights(chessBoard, tileBtn);
-                                         ActivateButtons();
-                                         return false;
-                                     }
-
-                                 }
-                             }
-                         }
-                         break;
-                     }
-                 case "k":
-                     {
-                         //top
-                         if (!tileBtn[destRow, destColumn].Text.Equals("e"))
-                         {
-                             currentClickedButton = null;
-                             currentTile = null;
-                             move.RemoveHighlights(chessBoard, tileBtn);
-                             ActivateButtons();
-                             return false;
-                         }
-
-                         break;
-                     }
-                 case "K":
-                     {
-                         if (!tileBtn[destRow, destColumn].Text.Equals("e"))
-                         {
-                             currentClickedButton = null;
-                             currentTile = null;
-                             move.RemoveHighlights(chessBoard, tileBtn);
-                             ActivateButtons();
-                             return false;
-                         }
-                         break;
-                     }
-                 case "r":
-                     {
-                         if (destRow >= srcX)
-                         {
-                             for (int x = srcX; x <= destRow; x++)
-                             {
-                                 if (!tileBtn[x, srcY].Text.Equals("e"))
-                                 {
-                                     currentClickedButton = null;
-                                     move.RemoveHighlights(chessBoard, tileBtn);
-                                     ActivateButtons();
-                                     return false;
-                                 }
-                                 else
-                                     return true;
-                                 }
-
-                             }
-                         break;
-                     }
-                 case "R":
-                     {
-                         if (destRow >= srcX)
-                         {
-                             for (int x = srcX; x <= destRow; x++)
-                             {
-                                 if (!tileBtn[x, srcY].Text.Equals("e"))
-                                 {
-                                     currentClickedButton = null;
-                                     move.RemoveHighlights(chessBoard, tileBtn);
-                                     ActivateButtons();
-                                     return false;
-                                 }
-                                 else
-                                     return true;
-                             }
-
-                         }
-                         break;
-                     }
-                 case "b":
-                     {
-                         //bottom right diagonal
-                         if (destRow > srcX)
-                         {
-                             for (int x = srcX; x < destRow; x++)
-                             {
-                                 if (destColumn > srcY)
-                                 {
-                                     for (int y = srcY; y < destColumn; y++)
-                                     {
-                                         if (!tileBtn[x, y].Text.Equals("e"))
-                                         {
-                                             currentClickedButton = null;
-                                             currentTile = null;
-                                             move.RemoveHighlights(chessBoard, tileBtn);
-                                             ActivateButtons();
-                                             return false;
-                                         }
-                                         else
-                                             return true;
-                                     }
-                                 }
-
-                             }
-                         }
-
-                         //bottom left diagonal
-                         if (destRow < srcX)
-                         {
-                             for (int x = srcX; x < destRow; x--)
-                             {
-                                 if (destColumn > srcY)
-                                 {
-                                     for (int y = srcY; y > destColumn; y++)
-                                     {
-                                         if (!tileBtn[x, y].Text.Equals("e"))
-                                         {
-                                             currentClickedButton = null;
-                                             currentTile = null;
-                                             move.RemoveHighlights(chessBoard, tileBtn);
-                                             ActivateButtons();
-                                             return false;
-                                         }
-
-                                     }
-                                 }
-
-                             }
-                         }
-
-                         break;
-                     }
-                 case "B":
-                     {
-                         if (destRow > srcX)
-                         {
-                             for (int x = srcX; x < destRow; x++)
-                             {
-                                 if (destColumn < srcY)
-                                 {
-                                     for (int y = srcY; y > destColumn; y--)
-                                     {
-                                         if (!tileBtn[x, y].Text.Equals("e"))
-                                         {
-                                             currentClickedButton = null;
-                                             move.RemoveHighlights(chessBoard, tileBtn);
-                                             ActivateButtons();
-                                             return false;
-                                         }
-                                         else
-                                             return true;
-                                     }
-                                 }
-
-                             }
-                         }
-
-                         //top left
-                         if (destRow < srcX)
-                         {
-                             for (int x = srcX; x > destRow; x--)
-                             {
-                                 if (destColumn < srcY)
-                                 {
-                                     for (int y = srcY; y >= destColumn; y--)
-                                     {
-                                         if (!tileBtn[x, y].Text.Equals("e"))
-                                         {
-                                             currentClickedButton = null;
-                                             move.RemoveHighlights(chessBoard, tileBtn);
-                                             ActivateButtons();
-                                             return false;
-                                         }
-                                         else
-                                             return true;
-                                     }
-                                 }
-
-                             }
-                         }
-
-                         break;
-                     }
-             }
-
-             return true;
-         }*/
-
-        public void SwitchPlayers()
+       public void CapturePiece()
         {
-            if (player == 1)
-                player = 2;
-            else
-                player = 1;
-        }
-        bool SamePlayer()
-        {
-            if (currentClickedButton.Text.Any(char.IsLower))
-            {
-                currentClickedButton = null;
-                currentTile = null;
-                move.RemoveHighlights(chessBoard, tileBtn);
-                move.ActivateButtons(chessBoard, tileBtn);
-                return false;
-            }
+            currentClickedButton.Text = "e";
+            newButton.Text = temp;
+            currentClickedButton = null;
+            currentTile = null;
 
-            if (currentClickedButton.Text.Any(char.IsUpper))
-            {
-                currentClickedButton = null;
-                currentTile = null;
-                move.RemoveHighlights(chessBoard, tileBtn);
-                move.ActivateButtons(chessBoard, tileBtn);
-                return false;
-            }
-            return true;
+
+            move.RemoveHighlights(chessBoard, tileBtn);
+            move.ActivateButtons(chessBoard, tileBtn);
+            p.SwitchPlayers(ref player);
         }
 
     }
