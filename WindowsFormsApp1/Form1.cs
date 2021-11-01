@@ -19,16 +19,7 @@ namespace WindowsFormsApp1
         public String piece, temp;
         Point newLocation;
         public int x, y, row, column, player = 1;
-        char[,] allPieces = new char[8, 8] {
-          { 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' },
-          {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' },
-          {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',},
-          { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',},
-          { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',},
-          { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
-          { 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-          { 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}
-      };
+        char[,] allPieces = new char[8, 8];
 public Form1()
         {
             InitializeComponent();
