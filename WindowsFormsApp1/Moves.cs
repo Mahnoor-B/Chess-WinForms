@@ -162,7 +162,7 @@ namespace WindowsFormsApp1
             }
         }
 
-        public bool IsPathClear(int destRow, int destColumn, int srcX, int srcY, String piece, int player, Button[,] tileBtn, Button currentClickedButton, Tile currentTile, Board chessBoard)
+        public bool IsPathClear(int destRow, int destColumn, int srcX, int srcY, String piece, ref int player, Button[,] tileBtn,ref Button currentClickedButton, ref Tile currentTile, Board chessBoard)
         {
             switch (piece)
             {
@@ -171,6 +171,7 @@ namespace WindowsFormsApp1
                         if (!tileBtn[srcX, srcY + 1].Text.Equals("e"))
                         {
                             currentClickedButton = null;
+                            currentTile = null;
                             RemoveHighlights(chessBoard, tileBtn);
                             ActivateButtons(chessBoard, tileBtn);
                             return false;
@@ -196,37 +197,14 @@ namespace WindowsFormsApp1
                 case "q":
                 case "Q":
                     {
-                        //top right diagonal
-                        if (destRow > srcX)
-                        {
-                            for (int x = srcX + 1; x < destRow; x++)
-                            {
-                                if (destColumn < srcY)
-                                {
-                                    for (int y = srcY - 1; y > destColumn; y--)
-                                    {
-                                        if (!tileBtn[x, y].Text.Equals("e"))
-                                        {
-                                            currentClickedButton = null;
-                                            currentTile = null;
-                                            RemoveHighlights(chessBoard, tileBtn);
-                                            ActivateButtons(chessBoard, tileBtn);
-                                            return false;
-                                        }
-                                    }
-                                }
-
-                            }
-                        }
-
                         //top left diagonal
-                        if (destRow < srcX)
+                        if (destColumn < srcY)
                         {
-                            for (int x = srcX - 1; x > destRow; x--)
+                            if (destRow < srcX)
                             {
-                                if (destColumn < srcY)
+                                for (int y = srcY - 1; y > destColumn; y--)
                                 {
-                                    for (int y = srcY - 1; y >= destColumn; y--)
+                                    for (int x = srcX - 1; x > destRow; x--)
                                     {
                                         if (!tileBtn[x, y].Text.Equals("e"))
                                         {
@@ -242,15 +220,42 @@ namespace WindowsFormsApp1
 
                             }
                         }
+                        
+                        //top right diagonal
+                        if (destColumn < srcY)
+                        {
+                            if (destRow > srcX)
+                            {
+                                for (int y = srcY - 1; y > destColumn; y--)
+                                {
+                               
+                                    for (int x = srcX + 1; x < destRow; x++)
+                                    {
+                                        if (!tileBtn[x, y].Text.Equals("e"))
+                                        {
+                                            currentClickedButton = null;
+                                            currentTile = null;
+                                            RemoveHighlights(chessBoard, tileBtn);
+                                            ActivateButtons(chessBoard, tileBtn);
+                                            return false;
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+
+                     
 
                         //bottom right diagonal
-                        if (destRow > srcX)
+                        if (destColumn > srcY)
                         {
-                            for (int x = srcX + 1; x < destRow; x++)
+                            if (destRow > srcX)
                             {
-                                if (destColumn > srcY)
+                                for (int y = srcY + 1; y < destColumn; y++)
                                 {
-                                    for (int y = srcY + 1; y < destColumn; y++)
+                               
+                                    for (int x = srcX + 1; x < destRow; x++)
                                     {
                                         if (!tileBtn[x, y].Text.Equals("e"))
                                         {
@@ -267,13 +272,14 @@ namespace WindowsFormsApp1
                         }
 
                         //bottom left diagonal
-                        if (destRow < srcX)
+                        if (destColumn > srcY)
                         {
-                            for (int x = srcX - 1; x > destRow; x--)
+                            if (destRow < srcX)
                             {
-                                if (destColumn > srcY)
+                                for (int y = srcY + 1; y > destColumn; y++)
                                 {
-                                    for (int y = srcY + 1; y > destColumn; y++)
+                               
+                                    for (int x = srcX - 1; x > destRow; x--)
                                     {
                                         if (!tileBtn[x, y].Text.Equals("e"))
                                         {
@@ -295,7 +301,7 @@ namespace WindowsFormsApp1
                         {
                             if (destColumn < srcY)
                             {
-                                for (int y = srcY - 1; y >= destColumn; y--)
+                                for (int y = srcY - 1; y > destColumn; y--)
                                 {
                                     if (!tileBtn[srcX, y].Text.Equals("e"))
                                     {
@@ -310,7 +316,7 @@ namespace WindowsFormsApp1
                             }
                             else if (destColumn > srcY)
                             {
-                                for (int y = srcY + 1; y <= destColumn; y++)
+                                for (int y = srcY + 1; y < destColumn; y++)
                                 {
                                     if (!tileBtn[srcX, y].Text.Equals("e"))
                                     {
@@ -329,7 +335,7 @@ namespace WindowsFormsApp1
                         {
                             if (destRow < srcX)
                             {
-                                for (int x = srcX - 1; x >= destRow; x--)
+                                for (int x = srcX - 1; x > destRow; x--)
                                 {
                                     if (!tileBtn[x, srcY].Text.Equals("e"))
                                     {
@@ -344,7 +350,7 @@ namespace WindowsFormsApp1
                             }
                             else if (destRow > srcX)
                             {
-                                for (int x = srcX + 1; x <= destRow; x++)
+                                for (int x = srcX + 1; x < destRow; x++)
                                 {
                                     if (!tileBtn[x, srcY].Text.Equals("e"))
                                     {
@@ -449,14 +455,39 @@ namespace WindowsFormsApp1
                 case "b":
                 case "B":
                     {
-                        //top right diagonal
-                        if (destRow > srcX)
+                        //top left diagonal
+                        if (destColumn < srcY)
                         {
-                            for (int x = srcX + 1; x < destRow; x++)
+                            if (destRow < srcX)
                             {
-                                if (destColumn < srcY)
+                                for (int y = srcY - 1; y > destColumn; y--)
                                 {
-                                    for (int y = srcY - 1; y > destColumn; y--)
+                                    for (int x = srcX - 1; x > destRow; x--)
+                                    {
+                                        if (!tileBtn[x, y].Text.Equals("e"))
+                                        {
+                                            currentClickedButton = null;
+                                            currentTile = null;
+                                            RemoveHighlights(chessBoard, tileBtn);
+                                            ActivateButtons(chessBoard, tileBtn);
+                                            return false;
+                                        }
+
+                                    }
+                                }
+
+                            }
+                        }
+
+                        //top right diagonal
+                        if (destColumn < srcY)
+                        {
+                            if (destRow > srcX)
+                            {
+                                for (int y = srcY - 1; y > destColumn; y--)
+                                {
+
+                                    for (int x = srcX + 1; x < destRow; x++)
                                     {
                                         if (!tileBtn[x, y].Text.Equals("e"))
                                         {
@@ -472,14 +503,17 @@ namespace WindowsFormsApp1
                             }
                         }
 
-                        //top left diagonal
-                        if (destRow < srcX)
+
+
+                        //bottom right diagonal
+                        if (destColumn > srcY)
                         {
-                            for (int x = srcX - 1; x > destRow; x--)
+                            if (destRow > srcX)
                             {
-                                if (destColumn < srcY)
+                                for (int y = srcY + 1; y < destColumn; y++)
                                 {
-                                    for (int y = srcY - 1; y >= destColumn; y--)
+
+                                    for (int x = srcX + 1; x < destRow; x++)
                                     {
                                         if (!tileBtn[x, y].Text.Equals("e"))
                                         {
@@ -493,53 +527,31 @@ namespace WindowsFormsApp1
                                 }
 
                             }
-                            //bottom right diagonal
-                            if (destRow > srcX)
-                            {
-                                for (int x = srcX + 1; x < destRow; x++)
-                                {
-                                    if (destColumn > srcY)
-                                    {
-                                        for (int y = srcY + 1; y < destColumn; y++)
-                                        {
-                                            if (!tileBtn[x, y].Text.Equals("e"))
-                                            {
-                                                currentClickedButton = null;
-                                                currentTile = null;
-                                                RemoveHighlights(chessBoard, tileBtn);
-                                                ActivateButtons(chessBoard, tileBtn);
-                                                return false;
-                                            }
-                                        }
-                                    }
+                        }
 
-                                }
-                            }
-
-                            //bottom left diagonal
+                        //bottom left diagonal
+                        if (destColumn > srcY)
+                        {
                             if (destRow < srcX)
                             {
-                                for (int x = srcX - 1; x > destRow; x--)
+                                for (int y = srcY + 1; y > destColumn; y++)
                                 {
-                                    if (destColumn > srcY)
+
+                                    for (int x = srcX - 1; x > destRow; x--)
                                     {
-                                        for (int y = srcY + 1; y < destColumn; y++)
+                                        if (!tileBtn[x, y].Text.Equals("e"))
                                         {
-                                            if (!tileBtn[x, y].Text.Equals("e"))
-                                            {
-                                                currentClickedButton = null;
-                                                currentTile = null;
-                                                RemoveHighlights(chessBoard, tileBtn);
-                                                ActivateButtons(chessBoard, tileBtn);
-                                                return false;
-                                            }
-
+                                            currentClickedButton = null;
+                                            currentTile = null;
+                                            RemoveHighlights(chessBoard, tileBtn);
+                                            ActivateButtons(chessBoard, tileBtn);
+                                            return false;
                                         }
+
                                     }
-
                                 }
-                            }
 
+                            }
                         }
                         break;
                     }

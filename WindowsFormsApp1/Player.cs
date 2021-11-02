@@ -17,7 +17,7 @@ namespace WindowsFormsApp1
             else
                 player = 1;
         }
-        public bool SamePlayer(Button currentClickedButton, Board chessBoard, Button[,] tileBtn)
+        public bool WhitePlayer(ref Button currentClickedButton, Board chessBoard, Button[,] tileBtn)
         {
             if (currentClickedButton.Text.Any(char.IsLower))
             {
@@ -25,7 +25,11 @@ namespace WindowsFormsApp1
                 move.ActivateButtons(chessBoard, tileBtn);
                 return false;
             }
+            return true;
+        }
 
+        public bool BlackPlayer(ref Button currentClickedButton, Board chessBoard, Button[,] tileBtn)
+        {
             if (currentClickedButton.Text.Any(char.IsUpper))
             {
                 move.RemoveHighlights(chessBoard, tileBtn);

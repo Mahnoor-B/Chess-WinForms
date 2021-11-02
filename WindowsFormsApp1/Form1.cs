@@ -14,19 +14,28 @@ namespace WindowsFormsApp1
         public Player p = new Player();
         public Button[,] tileBtn = new Button[chessBoard.Size, chessBoard.Size];
         public Button[,] tileBox = new Button[chessBoard.Size, chessBoard.Size];
-        Button newSender, currentClickedButton, newButton ;
+        Button newSender, currentClickedButton, newButton;
         public Tile currentTile;
         public String piece, temp;
         Point newLocation;
         public int x, y, row, column, player = 1;
-        char[,] allPieces = new char[8, 8];
+        char[,] allPieces = new char[8, 8] {
+              { 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' },
+          {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' },
+          { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',},
+          { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',},
+          { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',},
+          { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
+          { 'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+          { 'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}
+};
 public Form1()
         {
             InitializeComponent();
             allPieces = new char[8, 8] {
-          { 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' },
+              { 'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r' },
           {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p' },
-          {'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',},
+          { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',},
           { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',},
           { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e',},
           { 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'},
@@ -65,6 +74,7 @@ public Form1()
                     tileBtn[i, j].Text = "" + allPieces[j,i];
                     tileBtn[i, j].Tag = new Point(i, j);
                     tileBtn[i, j].Click += Piece_Clicked;
+
 
                     panel1.Controls.Add(tileBtn[i, j]);
                     panel1.Controls.Add(tileBox[i, j]);
@@ -109,84 +119,90 @@ public Form1()
 
                 if ((currentClickedButton.Text.Any(char.IsUpper) && player != 2 && !newButton.Text.Equals("e")))
                 {
-                    if (!p.SamePlayer(currentClickedButton, chessBoard, tileBtn))
+                    if (newButton.Text.Any(char.IsLower))
                     {
                         if (piece.Equals("P"))
                         {
-                            currentClickedButton.Text = "e";
-                            newButton.Text = temp;
-                            currentClickedButton = null;
-                            currentTile = null;
-
-
-                            move.RemoveHighlights(chessBoard, tileBtn);
-                            move.ActivateButtons(chessBoard, tileBtn);
-                            p.SwitchPlayers(ref player);
-                        }
-                        else if (move.IsPathClear(newTileLocation.X, newTileLocation.Y, x, y, piece, player, tileBtn, currentClickedButton, currentTile, chessBoard))
-                        {
-                            currentClickedButton.Text = "e";
-                            newButton.Text = temp;
-                            currentClickedButton = null;
-                            currentTile = null;
-
-
-                            move.RemoveHighlights(chessBoard, tileBtn);
-                            move.ActivateButtons(chessBoard, tileBtn);
-                            p.SwitchPlayers(ref player);
-                        }
-
-                    }
-
-                    return;
-                }
-                else if (currentClickedButton.Text.Any(char.IsLower) && player != 1 && !newButton.Text.Equals("e"))
-                {
-                    if (!p.SamePlayer(currentClickedButton, chessBoard, tileBtn))
-                    {
-                        if (piece.Equals("p"))
-                        {
-                            if(!tileBtn[newTileLocation.X, newTileLocation.Y].Text.Equals("e"))
+                            if (newButton.Text.Equals("k"))
                             {
-                                if (tileBtn[newTileLocation.X, newTileLocation.Y].Text.Equals("k"))
-                                    move.DeActivateOtherButtons(chessBoard, tileBtn);
-                                else 
-                                    CapturePiece();
-                            }
-                           else
-                                CapturePiece();
-                        }
-                        else if (move.IsPathClear(newTileLocation.X, newTileLocation.Y, x, y, piece, player, tileBtn, currentClickedButton, currentTile, chessBoard))
-                        {
-                            if (!tileBtn[newTileLocation.X, newTileLocation.Y].Text.Equals("e"))
-                            {
-                                if (tileBtn[newTileLocation.X, newTileLocation.Y].Text.Equals("K"))
-                                    move.DeActivateOtherButtons(chessBoard, tileBtn);
-                                else
-                                    CapturePiece();
+                                move.DeActivateOtherButtons(chessBoard, tileBtn);
+                                move.RemoveHighlights(chessBoard, tileBtn);
                             }
                             else
                                 CapturePiece();
                         }
+                       if (move.IsPathClear(newTileLocation.X, newTileLocation.Y, x, y, piece, ref player, tileBtn, ref currentClickedButton, ref currentTile, chessBoard))
+                        {
+                            if (!tileBtn[newTileLocation.X, newTileLocation.Y].Text.Equals(" "))
+                            {
+                                if (newButton.Text.Equals("k"))
+                                {
+                                    move.DeActivateOtherButtons(chessBoard, tileBtn);
+                                    move.RemoveHighlights(chessBoard, tileBtn);
+                                }
+                                else
+                                {
+                                    CapturePiece();
+                                }
+                                 
+                            }
+                        }
 
                     }
+                    else
+                    {
+                        currentClickedButton = null;
+                        move.RemoveHighlights(chessBoard, tileBtn);
+                        move.ActivateButtons(chessBoard, tileBtn);
+                    }
+                }
+                else if (currentClickedButton.Text.Any(char.IsLower) && player != 1 && !newButton.Text.Equals("e"))
+                {
+                    if (newButton.Text.Any(char.IsUpper))
+                    {
+                        if (piece.Equals("p"))
+                        {
+                            if (newButton.Text.Equals("K"))
+                            {
+                                move.DeActivateOtherButtons(chessBoard, tileBtn);
+                                move.RemoveHighlights(chessBoard, tileBtn);
+                            }
+                            else
+                            {
+                                CapturePiece();
+                            }
 
-                    return;
+                        }
+                        else if (move.IsPathClear(newTileLocation.X, newTileLocation.Y, x, y, piece, ref player, tileBtn, ref currentClickedButton, ref currentTile, chessBoard))
+                        {
+                            if (!tileBtn[newTileLocation.X, newTileLocation.Y].Text.Equals("e"))
+                            {
+                                if (newButton.Text.Equals("K"))
+                                {
+                                    move.DeActivateOtherButtons(chessBoard, tileBtn);
+                                    move.RemoveHighlights(chessBoard, tileBtn);
+                                }
+                                else
+                                {
+                                    CapturePiece();
+                                }
+                            }
+                      
+                        }
+
+                    }
+                    else
+                    {
+                        currentClickedButton = null;
+                        move.RemoveHighlights(chessBoard, tileBtn);
+                        move.ActivateButtons(chessBoard, tileBtn);
+                    }
                 }
                 else
                 {
-                    if (move.IsPathClear(newTileLocation.X, newTileLocation.Y, x, y, piece, player, tileBtn, currentClickedButton, currentTile, chessBoard))
+                    if (move.IsPathClear(newTileLocation.X, newTileLocation.Y, x, y, piece, ref player, tileBtn, ref currentClickedButton, ref currentTile, chessBoard))
                     {
-
-                        currentClickedButton.Text = newButton.Text;
-                        newButton.Text = temp;
-
-                        currentClickedButton = null;
-                        currentTile = null;
-                        move.RemoveHighlights(chessBoard, tileBtn);
-                        move.ActivateButtons(chessBoard, tileBtn);
-
-                        p.SwitchPlayers(ref player);
+                        CapturePiece();
                     }
                 }
             }
@@ -203,6 +219,7 @@ public Form1()
             move.RemoveHighlights(chessBoard, tileBtn);
             move.ActivateButtons(chessBoard, tileBtn);
             p.SwitchPlayers(ref player);
+            label1.Text = "Player = " + player;
         }
 
     }

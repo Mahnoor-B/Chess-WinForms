@@ -26,7 +26,7 @@ namespace WindowsFormsApp1
         public bool OutOfBounds(int row, int coloumn)
         {
             //if outside the chess board
-            if (row > 7 || coloumn > 7 || row < 1 || coloumn < 1)
+            if (row > 7 || coloumn > 7 || row < 0 || coloumn < 0)
                 return false;
             //else inside the chess board
             return true;
@@ -56,15 +56,15 @@ namespace WindowsFormsApp1
                 tileGrid[row - 1 * i, column].LegalNextMoves = true;
 
             //same column upper row
-            if (OutOfBounds(row, column - 1 * i))
+           else if (OutOfBounds(row, column - 1 * i))
                 tileGrid[row, column - 1 *i].LegalNextMoves = true;
 
             //same column below row
-            if (OutOfBounds(row, column + 1 * i))
+            else if (OutOfBounds(row, column + 1 * i))
                 tileGrid[row, column + 1 * i].LegalNextMoves = true;
 
             //same row right column
-            if (OutOfBounds(row + 1 * i, column))
+            else if (OutOfBounds(row + 1 * i, column))
                 tileGrid[row + 1 * i, column].LegalNextMoves = true;
         }
         public void NextLegalMoves(Tile currentTile, string chessPiece, int player, Button[,] tileBtn)
@@ -180,11 +180,11 @@ namespace WindowsFormsApp1
                                 tileGrid[currentTile.Row + 0, currentTile.Column - 2].LegalNextMoves = true;
 
                             }
-                            if (!tileBtn[currentTile.Row + 1, currentTile.Column - 1].Text.Equals("e"))
+                            else if (!tileBtn[currentTile.Row + 1, currentTile.Column - 1].Text.Equals("e"))
                             {
                                 tileGrid[currentTile.Row + 1, currentTile.Column - 1].LegalNextMoves = true;
                             }
-                            if (!tileBtn[currentTile.Row - 1, currentTile.Column - 1].Text.Equals("e"))
+                            else if (!tileBtn[currentTile.Row - 1, currentTile.Column - 1].Text.Equals("e"))
                             {
                                 tileGrid[currentTile.Row - 1, currentTile.Column - 1].LegalNextMoves = true;
                             }
@@ -199,11 +199,11 @@ namespace WindowsFormsApp1
                                 tileGrid[currentTile.Row + 0, currentTile.Column + 2].LegalNextMoves = true;
 
                             }
-                            if(!tileBtn[currentTile.Row + 1, currentTile.Column + 1].Text.Equals("e"))
+                            else if(!tileBtn[currentTile.Row + 1, currentTile.Column + 1].Text.Equals("e"))
                             {
                                 tileGrid[currentTile.Row + 1, currentTile.Column + 1].LegalNextMoves = true;
                             }
-                            if (!tileBtn[currentTile.Row - 1, currentTile.Column + 1].Text.Equals("e"))
+                            else if (!tileBtn[currentTile.Row - 1, currentTile.Column + 1].Text.Equals("e"))
                             {
                                 tileGrid[currentTile.Row - 1, currentTile.Column + 1].LegalNextMoves = true;
                             }
